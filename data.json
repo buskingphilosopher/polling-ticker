@@ -1,1 +1,27 @@
-["Biden: 52% (US)", "Trump: 41% (US)", "Biden: 51% (US)", "Trump: 44% (US)", "Biden: 53% (US)"]
+[
+  {
+    "candidate": "Biden",
+    "pct": 49.0,
+    "state": "Iowa"
+  },
+  {
+    "candidate": "Trump",
+    "pct": 48.0,
+    "state": "Iowa"
+  },
+  {
+    "candidate": "Biden",
+    "pct": 48.4,
+    "state": "Pennsylvania"
+  },
+  {
+    "candidate": "Trump",
+    "pct": 49.2,
+    "state": "Pennsylvania"
+  },
+  {
+    "candidate": "Jorgensen",
+    "pct": 1.4,
+    "state": "Pennsylvania"
+  }
+]
