@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polling Ticker</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: #00ffcc;
+    }
+
+    .ticker-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      overflow: hidden;
+      background: black;
+      border-top: 2px solid #00ffcc;
+      height: 50px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-text {
+      white-space: nowrap;
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 25s linear infinite;
+      font-size: 20px;
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateX(0%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    Live Polling Insights Ticker
+  </div>
+
+  <div class="ticker-container">
+    <div class="ticker-text" id="ticker">
+      Loading latest polling insights...
+    </div>
+  </div>
+
+  <script>
+    async function loadTicker() {
+      try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+
+        const formatted = data.join('   \u25CF   ');
+        document.getElementById('ticker').innerText = formatted;
+      } catch (error) {
+        document.getElementById('ticker').innerText = "Error loading polling data";
+      }
+    }
+
+    loadTicker();
+
+    // Refresh every 5 minutes
+    setInterval(loadTicker, 300000);
+  </script>
+
+</body>
+</html>
+
+/*
+--------------------------------------------
+BEGINNER STEP-BY-STEP GUIDE (FOLLOW EXACTLY)
+--------------------------------------------
+
+We are going VERY slowly. Do not skip steps.
+
+--------------------------------------------
+STEP 1 — CREATE YOUR PROJECT FOLDER
+--------------------------------------------
+
+1. On your computer, go to your Desktop
+2. Right click → New Folder
+3. Name it: polling-ticker
+
+--------------------------------------------
+STEP 2 — CREATE THE WEBSITE FILE
+--------------------------------------------
+
+1. Open the folder
+2. Right click → New File (or Text Document)
+3. Name it EXACTLY:
+   index.html
+
+4. Open it with a text editor (Notepad / VS Code)
+5. Paste ALL the HTML code from above into it
+6. Save
+
+--------------------------------------------
+STEP 3 — CREATE THE DATA FILE (THIS POWERS THE TICKER)
+--------------------------------------------
+
+1. In the SAME folder
+2. Create a new file called:
+   data.json
+
+3. Open it and paste:
+
+[
+  "Labour +4 this week ↑",
+  "Economy top issue (62%)",
+  "Conservatives -2 among under 30s"
+]
+
+4. Save
+
+--------------------------------------------
+STEP 4 — TEST IT LOCALLY
+--------------------------------------------
+
+1. Double click index.html
+2. It should open in your browser
+3. You should see scrolling text
+
+If yes → good, you're working
+
+--------------------------------------------
+STEP 5 — INSTALL PYTHON (ONLY ONCE)
+--------------------------------------------
+
+1. Go to: https://www.python.org/downloads/
+2. Download Python
+3. IMPORTANT: tick "Add Python to PATH" during install
+4. Finish install
+
+--------------------------------------------
+STEP 6 — CREATE THE AUTOMATION SCRIPT
+--------------------------------------------
+
+1. In your folder, create a new file:
+   update.py
+
+2. Open it and paste THIS:
+
+import json
+
+headlines = [
+    "Labour +4 this week ↑",
+    "Economy top issue (62%)",
+    "Conservatives -2 among under 30s"
+]
+
+with open('data.json', 'w') as f:
+    json.dump(headlines, f)
+
+3. Save
+
+--------------------------------------------
+STEP 7 — RUN THE SCRIPT
+--------------------------------------------
+
+1. In your folder, right click → "Open in Terminal"
+
+2. Type:
+   python update.py
+
+3. Press Enter
+
+This will UPDATE data.json automatically
+
+--------------------------------------------
+STEP 8 — CONNECT TO REAL POLLING DATA (LATER STEP)
+--------------------------------------------
+
+Right now, your script is FAKE data.
+
+Later, we will replace it with real data from:
+- FiveThirtyEight dataset
+
+But do NOT do this yet until everything works.
+
+--------------------------------------------
+STEP 9 — UPLOAD TO GITHUB
+--------------------------------------------
+
+1. Go to https://github.com
+2. Create account (if needed)
+3. Click "New Repository"
+4. Name: polling-ticker
+5. Upload these files:
+   - index.html
+   - data.json
+   - update.py
+
+--------------------------------------------
+STEP 10 — MAKE IT LIVE (VERY IMPORTANT)
+--------------------------------------------
+
+1. Go to your repo → Settings
+2. Click "Pages"
+3. Under "Source" select "main"
+4. Click Save
+
+You now have a LIVE WEBSITE
+
+--------------------------------------------
+STEP 11 — AUTOMATE (FINAL STEP)
+--------------------------------------------
+
+We will later add GitHub Actions so:
+- update.py runs automatically
+- data updates every hour
+
+--------------------------------------------
+KEY IDEA (REMEMBER THIS)
+--------------------------------------------
+
+index.html = DISPLAY (the ticker)
+data.json = CONTENT (the text)
+update.py = BRAIN (updates the content)
+
+--------------------------------------------
+NEXT STEP
+--------------------------------------------
+
+Once you've done STEP 1–7 successfully, come back and say:
+
+"ready for real polling data"
+
+Then I will upgrade your script to pull LIVE data properly.
+
+--------------------------------------------
+*/
