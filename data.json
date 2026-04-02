@@ -1,32 +1,44 @@
 [
   {
-    "candidate": "Biden",
-    "pct": 49.0,
-    "state": "Iowa",
-    "pollster": "PUBL"
+    "pollster": "YouGov",
+    "date": "2026-03-29",
+    "candidate": "Labour",
+    "pct": 29,
+    "movement": "RFM +4"
   },
   {
-    "candidate": "Trump",
-    "pct": 48.0,
-    "state": "Iowa",
-    "pollster": "PUBL"
+    "pollster": "YouGov",
+    "date": "2026-03-29",
+    "candidate": "Conservative",
+    "pct": 21,
+    "movement": "RFM -3"
   },
   {
-    "candidate": "Biden",
-    "pct": 48.4,
-    "state": "Pennsylvania",
-    "pollster": "SUSQ"
+    "pollster": "YouGov",
+    "date": "2026-03-29",
+    "candidate": "Lib Dem",
+    "pct": 12,
+    "movement": "RFM +1"
   },
   {
-    "candidate": "Trump",
-    "pct": 49.2,
-    "state": "Pennsylvania",
-    "pollster": "SUSQ"
+    "pollster": "More In Common",
+    "date": "2026-03-28",
+    "candidate": "Labour",
+    "pct": 30,
+    "movement": "RFM +5"
   },
   {
-    "candidate": "Jorgensen",
-    "pct": 1.4,
-    "state": "Pennsylvania",
-    "pollster": "SUSQ"
+    "pollster": "More In Common",
+    "date": "2026-03-28",
+    "candidate": "Conservative",
+    "pct": 19,
+    "movement": "RFM -2"
+  },
+  {
+    "pollster": "More In Common",
+    "date": "2026-03-28",
+    "candidate": "Lib Dem",
+    "pct": 11,
+    "movement": "RFM 0"
   }
 ]
