@@ -2,26 +2,31 @@
   {
     "candidate": "Biden",
     "pct": 49.0,
-    "state": "Iowa"
+    "state": "Iowa",
+    "pollster": "PUBL"
   },
   {
     "candidate": "Trump",
     "pct": 48.0,
-    "state": "Iowa"
+    "state": "Iowa",
+    "pollster": "PUBL"
   },
   {
     "candidate": "Biden",
     "pct": 48.4,
-    "state": "Pennsylvania"
+    "state": "Pennsylvania",
+    "pollster": "SUSQ"
   },
   {
     "candidate": "Trump",
     "pct": 49.2,
-    "state": "Pennsylvania"
+    "state": "Pennsylvania",
+    "pollster": "SUSQ"
   },
   {
     "candidate": "Jorgensen",
     "pct": 1.4,
-    "state": "Pennsylvania"
+    "state": "Pennsylvania",
+    "pollster": "SUSQ"
   }
 ]
