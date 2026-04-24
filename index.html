@@ -3,245 +3,215 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Polling Ticker</title>
+  <title>Poetry Keyboard</title>
+
   <style>
+    /* ── This is CSS — it controls how things LOOK ── */
+
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: black;
-      color: #00ffcc;
-    }
-
-    .ticker-container {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      overflow: hidden;
-      background: black;
-      border-top: 2px solid #00ffcc;
-      height: 50px;
+      font-family: Georgia, serif;
+      background: #f5f3ef;
       display: flex;
-      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      margin: 0;
     }
 
-    .ticker-text {
-      white-space: nowrap;
-      display: inline-block;
-      padding-left: 100%;
-      animation: scroll 25s linear infinite;
-      font-size: 20px;
+    .container {
+      width: 100%;
+      max-width: 500px;
     }
 
-    @keyframes scroll {
-      0% {
-        transform: translateX(0%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+    h1 {
+      font-size: 22px;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin-bottom: 6px;
     }
 
-    .header {
-      padding: 20px;
+    p.subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    /* The search box */
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #888;
+    }
+
+    /* The results area — hidden until there are results */
+    #results {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Each poetry result card */
+    .card {
+      background: white;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .card:hover {
+      border-color: #aaa;
+    }
+
+    .card .quote {
+      font-size: 15px;
+      font-style: italic;
+      color: #222;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .card .poet {
+      font-size: 12px;
+      color: #999;
+      font-style: normal;
+    }
+
+    /* The "copied!" confirmation message */
+    .copied-msg {
       text-align: center;
-      font-size: 24px;
+      font-size: 13px;
+      color: #555;
+      margin-top: 12px;
+      min-height: 20px;
     }
   </style>
 </head>
+
 <body>
+  <!-- ── This is HTML — it controls what's ON the page ── -->
 
-  <div class="header">
-    Live Polling Insights Ticker
-  </div>
+  <div class="container">
 
-  <div class="ticker-container">
-    <div class="ticker-text" id="ticker">
-      Loading latest polling insights...
-    </div>
+    <h1>✦ Poetry Keyboard</h1>
+    <p class="subtitle">Type a feeling. Find a line. Send it.</p>
+
+    <!-- The search input field -->
+    <input
+      type="text"
+      id="search"
+      placeholder="Type a feeling — happy, lost, grateful…"
+    />
+
+    <!-- Results appear here -->
+    <div id="results"></div>
+
+    <!-- Confirmation message when a line is copied -->
+    <p class="copied-msg" id="copied-msg"></p>
+
   </div>
 
   <script>
-    async function loadTicker() {
-      try {
-        const response = await fetch('data.json');
-        const data = await response.json();
+    // ── This is JavaScript — it controls what things DO ── 
 
-        const formatted = data.join('   \u25CF   ');
-        document.getElementById('ticker').innerText = formatted;
-      } catch (error) {
-        document.getElementById('ticker').innerText = "Error loading polling data";
+    // Our small poetry library.
+    // Each entry has: a mood tag, the quote, and the poet.
+    const poems = [
+      { mood: "happy",     quote: "I am so happy, so happy and careless and gay!", poet: "W.H. Davies" },
+      { mood: "happy",     quote: "O, my luve is like a red, red rose, that's newly sprung in June.", poet: "Robert Burns" },
+      { mood: "happy",     quote: "Joy, whose hand is ever at his lips bidding adieu.", poet: "John Keats" },
+      { mood: "sad",       quote: "I have been one acquainted with the night.", poet: "Robert Frost" },
+      { mood: "sad",       quote: "After great pain, a formal feeling comes.", poet: "Emily Dickinson" },
+      { mood: "sad",       quote: "There is another sky, ever serene and fair.", poet: "Emily Dickinson" },
+      { mood: "lost",      quote: "Two roads diverged in a wood, and I took the one less travelled by.", poet: "Robert Frost" },
+      { mood: "lost",      quote: "I am out with lanterns, looking for myself.", poet: "Emily Dickinson" },
+      { mood: "lost",      quote: "We shall not cease from exploration, and the end of all our exploring will be to arrive where we started.", poet: "T.S. Eliot" },
+      { mood: "love",      quote: "How do I love thee? Let me count the ways.", poet: "Elizabeth Barrett Browning" },
+      { mood: "love",      quote: "Whatever our souls are made of, his and mine are the same.", poet: "Emily Brontë" },
+      { mood: "love",      quote: "I carry your heart with me. I carry it in my heart.", poet: "E.E. Cummings" },
+      { mood: "lonely",    quote: "All the lonely people, where do they all belong?", poet: "Lennon & McCartney" },
+      { mood: "lonely",    quote: "I exist as I am — that is enough.", poet: "Walt Whitman" },
+      { mood: "grateful",  quote: "I thank you God for this most amazing day.", poet: "E.E. Cummings" },
+      { mood: "grateful",  quote: "Beauty is truth, truth beauty — that is all ye know on earth.", poet: "John Keats" },
+      { mood: "anxious",   quote: "Do I dare disturb the universe?", poet: "T.S. Eliot" },
+      { mood: "anxious",   quote: "I am not afraid of storms, for I am learning how to sail my ship.", poet: "Louisa May Alcott" },
+      { mood: "frustrated",quote: "I am large, I contain multitudes.", poet: "Walt Whitman" },
+      { mood: "frustrated",quote: "Turning and turning in the widening gyre, the falcon cannot hear the falconer.", poet: "W.B. Yeats" },
+      { mood: "hopeful",   quote: "Hope is the thing with feathers that perches in the soul.", poet: "Emily Dickinson" },
+      { mood: "hopeful",   quote: "In the middle of winter I found there was, within me, an invincible summer.", poet: "Albert Camus" },
+    ];
+
+    // This line finds the <input> element in the HTML above
+    // and stores it in a variable called "searchBox"
+    const searchBox = document.getElementById("search");
+
+    // This line finds the <div id="results"> element
+    const resultsDiv = document.getElementById("results");
+
+    // This line finds the copied message element
+    const copiedMsg = document.getElementById("copied-msg");
+
+    // This function runs every time the user types something
+    searchBox.addEventListener("input", function () {
+
+      // Get whatever the user typed, and make it lowercase
+      // so "Happy" and "happy" both work
+      const query = searchBox.value.toLowerCase().trim();
+
+      // Clear old results
+      resultsDiv.innerHTML = "";
+      copiedMsg.textContent = "";
+
+      // If they haven't typed anything yet, stop here
+      if (query.length < 2) return;
+
+      // Search our poems array for anything that matches
+      const matches = poems.filter(function (poem) {
+        return poem.mood.includes(query) || poem.quote.toLowerCase().includes(query);
+      });
+
+      // If nothing matched, show a message
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = "<p style='color:#aaa; font-size:14px;'>No lines found — try another feeling.</p>";
+        return;
       }
-    }
 
-    loadTicker();
+      // For each match, build a card and add it to the page
+      matches.forEach(function (poem) {
 
-    // Refresh every 5 minutes
-    setInterval(loadTicker, 300000);
+        // Create a new <div> element
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // Fill it with the quote and poet name
+        card.innerHTML = `
+          <div class="quote">"${poem.quote}"</div>
+          <div class="poet">— ${poem.poet}</div>
+        `;
+
+        // When the card is clicked, copy the quote to clipboard
+        card.addEventListener("click", function () {
+          const textToCopy = `"${poem.quote}" — ${poem.poet}`;
+          navigator.clipboard.writeText(textToCopy);
+          copiedMsg.textContent = "Copied! Paste it anywhere ✓";
+        });
+
+        // Add the card to the results div
+        resultsDiv.appendChild(card);
+      });
+    });
   </script>
 
 </body>
 </html>
-
-/*
---------------------------------------------
-BEGINNER STEP-BY-STEP GUIDE (FOLLOW EXACTLY)
---------------------------------------------
-
-We are going VERY slowly. Do not skip steps.
-
---------------------------------------------
-STEP 1 — CREATE YOUR PROJECT FOLDER
---------------------------------------------
-
-1. On your computer, go to your Desktop
-2. Right click → New Folder
-3. Name it: polling-ticker
-
---------------------------------------------
-STEP 2 — CREATE THE WEBSITE FILE
---------------------------------------------
-
-1. Open the folder
-2. Right click → New File (or Text Document)
-3. Name it EXACTLY:
-   index.html
-
-4. Open it with a text editor (Notepad / VS Code)
-5. Paste ALL the HTML code from above into it
-6. Save
-
---------------------------------------------
-STEP 3 — CREATE THE DATA FILE (THIS POWERS THE TICKER)
---------------------------------------------
-
-1. In the SAME folder
-2. Create a new file called:
-   data.json
-
-3. Open it and paste:
-
-[
-  "Labour +4 this week ↑",
-  "Economy top issue (62%)",
-  "Conservatives -2 among under 30s"
-]
-
-4. Save
-
---------------------------------------------
-STEP 4 — TEST IT LOCALLY
---------------------------------------------
-
-1. Double click index.html
-2. It should open in your browser
-3. You should see scrolling text
-
-If yes → good, you're working
-
---------------------------------------------
-STEP 5 — INSTALL PYTHON (ONLY ONCE)
---------------------------------------------
-
-1. Go to: https://www.python.org/downloads/
-2. Download Python
-3. IMPORTANT: tick "Add Python to PATH" during install
-4. Finish install
-
---------------------------------------------
-STEP 6 — CREATE THE AUTOMATION SCRIPT
---------------------------------------------
-
-1. In your folder, create a new file:
-   update.py
-
-2. Open it and paste THIS:
-
-import json
-
-headlines = [
-    "Labour +4 this week ↑",
-    "Economy top issue (62%)",
-    "Conservatives -2 among under 30s"
-]
-
-with open('data.json', 'w') as f:
-    json.dump(headlines, f)
-
-3. Save
-
---------------------------------------------
-STEP 7 — RUN THE SCRIPT
---------------------------------------------
-
-1. In your folder, right click → "Open in Terminal"
-
-2. Type:
-   python update.py
-
-3. Press Enter
-
-This will UPDATE data.json automatically
-
---------------------------------------------
-STEP 8 — CONNECT TO REAL POLLING DATA (LATER STEP)
---------------------------------------------
-
-Right now, your script is FAKE data.
-
-Later, we will replace it with real data from:
-- FiveThirtyEight dataset
-
-But do NOT do this yet until everything works.
-
---------------------------------------------
-STEP 9 — UPLOAD TO GITHUB
---------------------------------------------
-
-1. Go to https://github.com
-2. Create account (if needed)
-3. Click "New Repository"
-4. Name: polling-ticker
-5. Upload these files:
-   - index.html
-   - data.json
-   - update.py
-
---------------------------------------------
-STEP 10 — MAKE IT LIVE (VERY IMPORTANT)
---------------------------------------------
-
-1. Go to your repo → Settings
-2. Click "Pages"
-3. Under "Source" select "main"
-4. Click Save
-
-You now have a LIVE WEBSITE
-
---------------------------------------------
-STEP 11 — AUTOMATE (FINAL STEP)
---------------------------------------------
-
-We will later add GitHub Actions so:
-- update.py runs automatically
-- data updates every hour
-
---------------------------------------------
-KEY IDEA (REMEMBER THIS)
---------------------------------------------
-
-index.html = DISPLAY (the ticker)
-data.json = CONTENT (the text)
-update.py = BRAIN (updates the content)
-
---------------------------------------------
-NEXT STEP
---------------------------------------------
-
-Once you've done STEP 1–7 successfully, come back and say:
-
-"ready for real polling data"
-
-Then I will upgrade your script to pull LIVE data properly.
-
---------------------------------------------
-*/
