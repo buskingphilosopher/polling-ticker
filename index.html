@@ -6,7 +6,6 @@
   <title>Poetry Keyboard</title>
 
   <style>
-    /* ── LOOK ── */
 
     body {
       font-family: Georgia, serif;
@@ -20,6 +19,69 @@
     .container {
       width: 100%;
       max-width: 500px;
+    }
+
+    #carousel {
+      width: 100%;
+      height: 280px;
+      position: relative;
+      overflow: hidden;
+      background: #1a1a1a;
+    }
+
+    .painting {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;        /* fills the frame without distorting */
+      object-position: center top;
+      opacity: 0;               /* invisible by default */
+      transition: opacity 1.2s ease;  /* fade transition */
+    }
+
+    .painting.active {
+      opacity: 1;
+    }
+
+    #carousel-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.55));
+      color: white;
+      font-size: 12px;
+      padding: 24px 14px 10px;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+ 
+    #carousel-caption.active {
+      opacity: 1;
+    }
+
+    #carousel-dots {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      display: flex;
+      gap: 5px;
+    }
+ 
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: background 0.3s;
+    }
+ 
+    .dot.active {
+      background: white;
+    }
+ 
+    .search-section {
+      padding: 28px 20px 0;
     }
 
     h1 {
@@ -143,25 +205,122 @@
 </head>
 
 <body>
-
   <div class="container">
 
-    <h1>✦ Poetry Keyboard</h1>
-    <p class="subtitle">Type in an emotion to see how poets have worded it.</p>
+    <div id="carousel">
+      <div id="carousel-caption"></div>
+      <div id="carousel-dots"></div>
+    </div>
 
-    <input
-      type="text"
-      id="search"
-      placeholder="Type a feeling — happy, anxious, grateful…"
-    />
+    <div class="search-section">
 
-    <div id="chips"></div>
-    <div id="results"></div>
-    <p class="copied-msg" id="copied-msg"></p>
-
+      <h1>✦ Poetry Keyboard</h1>
+      <p class="subtitle">Type in an emotion to see how poets have worded it.</p>
+  
+      <input
+        type="text"
+        id="search"
+        placeholder="Type a feeling — happy, anxious, grateful…"
+      />
+  
+      <div id="chips"></div>
+      <div id="results"></div>
+      <p class="copied-msg" id="copied-msg"></p>
+  
+    </div>
+    
   </div>
-
+  
   <script>
+
+    const paintings = [
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        title: "The Starry Night",
+        artist: "Vincent van Gogh, 1889"
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camille_Pissarro_-_La_Pie.jpg/1280px-Camille_Pissarro_-_La_Pie.jpg",
+        title: "La Pie (The Magpie)",
+        artist: "Claude Monet, 1868"
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/John_William_Waterhouse_-_The_Lady_of_Shalott_-_1888.jpg/964px-John_William_Waterhouse_-_The_Lady_of_Shalott_-_1888.jpg",
+        title: "The Lady of Shalott",
+        artist: "John William Waterhouse, 1888"
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/724px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg",
+        title: "Wanderer Above the Sea of Fog",
+        artist: "Caspar David Friedrich, 1818"
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        title: "Mona Lisa",
+        artist: "Leonardo da Vinci, c. 1503"
+      },
+      {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Giorgione_-_The_Tempest_-_Gallerie_dell%27Accademia_Venice.jpg/1200px-Giorgione_-_The_Tempest_-_Gallerie_dell%27Accademia_Venice.jpg",
+        title: "The Tempest",
+        artist: "Giorgione, c. 1508"
+      },
+    ];
+    
+    const carousel    = document.getElementById("carousel");
+    const captionEl   = document.getElementById("carousel-caption");
+    const dotsEl      = document.getElementById("carousel-dots");
+    let currentSlide  = 0;
+ 
+    // Create an <img> element for each painting and add it to the carousel
+    paintings.forEach(function(painting, index) {
+      const img = document.createElement("img");
+      img.className = "painting";
+      img.src = painting.url;
+      img.alt = painting.title;
+ 
+      // Insert image BEFORE the caption and dots so it sits behind them
+      carousel.insertBefore(img, captionEl);
+ 
+      // Create a dot for this slide
+      const dot = document.createElement("div");
+      dot.className = "dot";
+      dotsEl.appendChild(dot);
+    });
+ 
+    // This function switches to a given slide number
+    function goToSlide(index) {
+      // Get all painting images and dots
+      const imgs = carousel.querySelectorAll(".painting");
+      const dots = dotsEl.querySelectorAll(".dot");
+ 
+      // Remove "active" from all of them
+      imgs.forEach(img => img.classList.remove("active"));
+      dots.forEach(dot => dot.classList.remove("active"));
+      captionEl.classList.remove("active");
+ 
+      // Add "active" to the current slide
+      imgs[index].classList.add("active");
+      dots[index].classList.add("active");
+ 
+      // Update the caption text
+      captionEl.textContent = `${paintings[index].title} — ${paintings[index].artist}`;
+ 
+      // A tiny delay before fading the caption in looks nicer
+      setTimeout(() => captionEl.classList.add("active"), 100);
+    }
+ 
+    // Show the first slide immediately
+    goToSlide(0);
+ 
+    // Then advance every 7 seconds automatically
+    // setInterval runs a function repeatedly on a timer
+    setInterval(function() {
+      // Move to next slide; wrap back to 0 when we reach the end
+      // The % symbol is "modulo" — it gives the remainder after division
+      // e.g. (5 + 1) % 6 = 0, so it loops back to the start
+      currentSlide = (currentSlide + 1) % paintings.length;
+      goToSlide(currentSlide);
+    }, 7000);
 
     const synonyms = {
       "angry":     "anger",
