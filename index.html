@@ -117,9 +117,12 @@
     /* ── MOOD CHIPS ── */
     #chips {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 8px;
       margin-top: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
     }
 
     .chip {
