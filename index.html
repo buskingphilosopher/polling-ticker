@@ -163,6 +163,25 @@
 
   <script>
 
+    const synonyms = {
+      "angry":     "anger",
+      "anger":     "anger", 
+      "furious":   "fury",
+      "mad":       "anger",
+      "upset":     "frustrated",
+      "sadness":   "sad",
+      "unhappy":   "sad",
+      "depressed": "sad",
+      "lonesome":  "lonely",
+      "alone":     "lonely",
+      "happiness": "happy",
+      "joyful":    "joy",
+      "hopeless":  "lost",
+      "worried":   "anxious",
+      "nervous":   "anxious",
+      "thankful":  "grateful",
+    };
+
     // Each poem now has "moods" — an ARRAY (list) of tags, using square brackets
     const poems = [
       {
@@ -336,11 +355,16 @@
 
     function runSearch(query) {
       clearResults();
-
-      // .some() checks if ANY mood tag in the array matches the query
+    
+      // Translate via synonym map, or keep original if not found
+      const translated = synonyms[query] || query;
+    
       const matches = poems.filter(function(poem) {
-        const moodMatch  = poem.moods.some(m => m.includes(query));
-        const quoteMatch = poem.quote.toLowerCase().includes(query);
+        // Check both directions: does mood contain query, or query contain mood?
+        const moodMatch = poem.moods.some(m => 
+          m.includes(translated) || translated.includes(m)
+        );
+        const quoteMatch = poem.quote.toLowerCase().includes(translated);
         return moodMatch || quoteMatch;
       });
 
